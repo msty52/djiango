@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Чат-комнаты</title>
+    <style>
+        .room-list {
+            list-style: none;
+            padding: 0;
+        }
+        .room-item {
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+        .room-link {
+            font-size: 1.2em;
+            text-decoration: none;
+            color: #333;
+        }
+        .room-description {
+            color: #666;
+            margin: 5px 0;
+        }
+        .room-meta {
+            font-size: 0.9em;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <h1>Чат-комнаты</h1>
+    
+    <ul class="room-list">
+    {% for room in rooms %}
+        <li class="room-item">
+            <a href="{% url 'room_detail' room.id %}" class="room-link">{{ room.name }}</a>
+            <p class="room-description">{{ room.description }}</p>
+            <div class="room-meta">
+                Создана: {{ room.created_by.username }} • {{ room.created_at|date:"d.m.Y H:i" }}
+                {% if room.is_private %} • 🔒 Приватная{% endif %}
+            </div>
+        </li>
+    {% empty %}
+        <li>Пока нет чат-комнат. Создайте первую через админку!</li>
+    {% endfor %}
+    </ul>
+    
+    <div style="margin-top: 20px;">
+        <a href="/admin/">Админка</a> | 
+        <a href="/admin/chat/chatroom/add/">Создать комнату</a>
+    </div>
+</body>
+</html>

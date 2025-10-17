@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ room.name }} - Чат</title>
+    <style>
+        #chat-log {
+            height: 400px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            overflow-y: scroll;
+            margin-bottom: 10px;
+            background: #fafafa;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 8px;
+            background: #fff;
+            border-left: 4px solid #007bff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .message .username {
+            font-weight: bold;
+            color: #007bff;
+        }
+        .message .timestamp {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 5px;
+            display: block;
+        }
+        #chat-message-input {
+            width: 70%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        #chat-message-submit {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #chat-message-submit:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ room.name }}</h1>
+    <p>{{ room.description }}</p>
+    
+    <div id="chat-log">
+        {% for message in messages %}
+            <div class="message">
+                <span class="username">{{ message.user.username }}</span>:
+                <span class="text">{{ message.message }}</span>
+                <span class="timestamp">{{ message.timestamp }}</span>
+            </div>
+        {% empty %}
+            <div class="message">
+                <span class="text">Пока нет сообщений. Будьте первым!</span>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <div>
+        <input id="chat-message-input" type="text" placeholder="Введите сообщение...">
+        <input id="chat-username-input" type="text" placeholder="Ваше имя" value="Гость">
+        <button id="chat-message-submit">Отправить</button>
+    </div>
+    
+    <div style="margin-top: 20px;">
+        <a href="{% url 'home' %}">← Назад к списку комнат</a>
+    </div>
+
+    <script>
+        // Получаем элементы DOM
+        const chatLog = document.getElementById('chat-log');
+        const messageInput = document.getElementById('chat-message-input');
+        const usernameInput = document.getElementById('chat-username-input');
+        const submitButton = document.getElementById('chat-message-submit');
+        
+        // Функция для добавления сообщения в чат
+        function addMessageToChat(username, message, timestamp) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message');
+            
+            messageElement.innerHTML = `
+                <span class="username">${username}</span>:
+                <span class="text">${message}</span>
+                <span class="timestamp">${timestamp}</span>
+            `;
+            
+            chatLog.appendChild(messageElement);
+            chatLog.scrollTop = chatLog.scrollHeight;
+        }
+        
+        // Функция отправки сообщения
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            const username = usernameInput.value.trim() || 'Гость';
+            
+            if (message) {
+                // Добавляем сообщение сразу в чат (в реальном приложении это будет через WebSocket)
+                const timestamp = new Date().toLocaleString();
+                addMessageToChat(username, message, timestamp);
+                
+                // Очищаем поле ввода
+                messageInput.value = '';
+                
+                // Здесь будет отправка на сервер через WebSocket
+                console.log('Сообщение отправлено:', { username, message });
+            }
+        }
+        
+        // Обработчики событий
+        submitButton.addEventListener('click', sendMessage);
+        
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        // Прокрутка вниз при загрузке
+        chatLog.scrollTop = chatLog.scrollHeight;
+        
+        // Сообщение о том, что WebSocket временно отключен
+        console.log('WebSocket временно отключен. Используется локальный чат.');
+    </script>
+</body>
+</html>
